@@ -203,8 +203,12 @@ NoteSymbol {
         ^ChordSymbol.noteProgression(this);
     }
 
-    chordProgDegrees { |root scale|
-        ^ChordSymbol.degreeProgression(this, root, scale);
+    chordProgDegrees { |scale|
+        ^ChordSymbol.degreeProgression(this, scale);
+    }
+
+    noteProg {  
+        this.collect { |name| name.asNote };
     }
 
     // converts a given key/note to a degree

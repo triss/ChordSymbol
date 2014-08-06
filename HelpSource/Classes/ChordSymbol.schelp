@@ -1,7 +1,7 @@
 TITLE:: ChordSymbol
 summary:: Helper class for generating information about chords from symbols
 categories:: Math, Tuning
-related:: Classes/Scale, Classes/Tuning, Classes/Note
+related:: Classes/Scale, Classes/Tuning, Classes/NoteSymbol
 
 DESCRIPTION::
 ChordSymbol can take a chord name and tell you which notes or scale degrees are in it.
