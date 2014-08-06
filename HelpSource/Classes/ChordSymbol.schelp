@@ -1,0 +1,146 @@
+TITLE:: ChordSymbol
+summary:: Helper class for generating information about chords from symbols
+categories:: Math, Tuning
+related:: Classes/Scale, Classes/Tuning, Classes/Note
+
+DESCRIPTION::
+ChordSymbol can take a chord name and tell you which notes or scale degrees are in it.
+
+You're unlikely to need to use this class directly since convienance methods
+have been implimented for link::Classes/Symbol:: and link::Classes/SequencableCollection::.  
+
+Quickly write progressions with .chordProg:
+code::
+[\C, \G_b, \F_a, \G_b].chordProg // -> [ [ 0, 4, 7 ], [ 11, 14, 19 ], [ 9, 12, 17 ], [ 11, 14, 19 ] ]
+::
+
+Supports multiple naming conventions for common chords:
+code::
+\C.asNotes              // C major -> [0, 4, 7]
+\Cmajor.asNotes         // C major -> [0, 4, 7]
+\CM.asNotes             // C major -> [0, 4, 7] 
+
+\Cm.asNotes             // C minor -> [0, 3, 7]
+\Em7sharp5flat9.asNotes // [ 4, 7, 12, 14, 17 ]
+::
+Supports sharps and flats using s and b respectively:
+code::
+\Gs.asNotes             // G# major -> [ 8, 12, 15 ]
+\Dbmaj11.asNotes        // Db major11 -> [ 1, 5, 8, 12, 15, 18 ]
+::
+
+And slash/inverted chords - just replace the slash seen in notation with an underscore
+code::
+\C_g.asNotes            // C/g -> [ 7, 12, 16 ]
+\Fm_gs.asNotes          // Fm/a -> [ 8, 12, 17 ]
+\Dsus4_g.asNotes        // Dsus4/g -> [ 7, 9, 14 ]
+::
+
+It also allows the user specify the octave if required
+code::
+\C4m7sharp9.asNotes     // [ 60, 63, 67, 70, 74 ]
+\C5m7sharp9.asNotes     // [ 72, 75, 79, 82, 86 ]
+\F6plus_Cs.asNotes      // [ 77, 81, 85 ]
+::
+
+It can also tell you which degrees would be in a chord shape in a given mode/scale
+Be careful of sharpening/flattening when using to produce scale degrees.
+This is fantastic for notating chord progressions but may not behave as expected when 
+combined with transpositions etc. A root note of C is always assumed
+code::
+\Cmajor.asDegrees                  // major scale assumed if none specified -> [0, 2, 4]
+\Cminor.asDegrees                  // [0, 1.1, 4]
+\Cmajor.asDegrees(Scale.minor)     // major chord in minor mode -> [0, 2.1, 4] 
+\m7sharp5.asDegrees(Scale.dorian)  // [ 0, 2, 4.1, 6 ]
+::
+
+You can also get the degrees for a progression in terms of a particular mode:
+code::
+[\Cm_eb, \Fm, \Gm, \Cm_g, \Cm_eb, \Fm, \Gm_d, \Cm].chordProgDegrees(Scale.dorian)
+::
+
+
+CLASSMETHODS::
+
+METHOD:: shapes
+A dictionary containing all the chord shapes ChordSymbol knows about.
+
+code::
+// will list all the chord shapes ChordSymbol knows about
+ChordSymbol.shapes.keys;
+
+// you can add and redefine chords using .put
+// - the notes in the chord are specified as keys/notes not degrees
+ChordSymbol.shapes.put(\myCrazyChord, [0,1,2,3]);
+
+\Eb4myCrazyChord_e.asNotes; // -> [ 51, 52, 53, 54 ]
+::
+
+METHOD:: asNotes
+Outputs the notes in a given chord
+
+ARGUMENT:: name
+The name of the chord.
+
+returns:: The notes in the named chord
+
+code::
+ChordSymbol.asNotes(\Cm7) // -> [ 0, 3, 7, 10 ]
+::
+
+METHOD:: noteProgression
+Converts all the Chord symbols in a given array to arrays of notes.
+
+ARGUMENT:: array
+The input array.
+
+returns:: An array with all chord symbols as arrays of notes
+
+code::
+(
+// will output the scale degrees required to play a twelve bar blues in terms
+// of degrees of a minor scale
+~twelveBar = ChordSymbol.noteProgression([
+    \Cdom7, \Fdom7, \Cdom7, \Cdom7, 
+    \Fdom7, \Fdom7, \Cdom7, \Cdom7, 
+    \Gdom7, \Fdom7, \Cdom7, \Cdom7
+]);
+)
+::
+
+METHOD:: asDegrees
+Outputs named chord in terms of scale degrees in scale.
+
+ARGUMENT:: name
+The chord name as a symbol.
+
+ARGUMENT:: scale
+The scale to convert it in.
+
+returns:: named chord in terms of scale degrees in scale.
+
+METHOD:: degreeProgression
+Takes an array of symbols and other bits and pieces and converst the chord 
+symbols to arrays containing the degrees in in that chord in the given scale.
+
+ARGUMENT:: array
+An array containing chord symbols.
+
+ARGUMENT:: scale
+The mode to put the degrees in.
+
+returns:: An array with chord symbols converted to chords as in terms of scale degrees.
+
+code::
+(
+// will output the scale degrees required to play a twelve bar blues in terms
+// of degrees of a minor scale
+~twelveBar = ChordSymbol.degreeProgression([
+    \Cdom7, \Fdom7, \Cdom7, \Cdom7, 
+    \Fdom7, \Fdom7, \Cdom7, \Cdom7, 
+    \Gdom7, \Fdom7, \Cdom7, \Cdom7
+], Scale.minor)
+)
+::
+
+INSTANCEMETHODS::
