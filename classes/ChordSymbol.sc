@@ -208,7 +208,7 @@ NoteSymbol {
     }
 
     noteProg {  
-        this.collect { |name| name.asNote };
+        ^this.collect { |name| name.asNote };
     }
 
     // converts a given key/note to a degree
