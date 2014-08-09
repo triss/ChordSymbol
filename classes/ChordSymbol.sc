@@ -77,8 +77,6 @@ ChordSymbol {
         ^if(name.isKindOf(Symbol) or: { name.isKindOf(String) } 
             and: { name != \ } and: { name != \rest }
         ) {
-            scale = scale ?? { Scale.major.degrees };
-
             ChordSymbol.asNotes(name).asArray.collect { |n| 
                 // TODO when next version of SC comes out use keyToDegree
                 n.keyToDegree2(scale, stepsPerOctave);
@@ -93,57 +91,68 @@ ChordSymbol {
         ^if(name.isKindOf(Symbol) or: { name.isKindOf(String) } 
             and: { name != \ } and: { name != \rest }
         ){
-            var over, chord;
+            var over, chord, shape, root = 0, noteNameLength = 0, dur;
 
             name = name.asString;
 
             // lop off the inversion if specified
-            if(name.contains("_")) {
-                #name, over = name.split($\_);
-                over = NoteSymbol(over);
+            #name, over, dur = name.split($\_);
+
+            // work out if duration or over was specified after the first _
+            if(dur.isNil) {
+                if(over.notNil and: { over[0].isDecDigit }) {
+                    dur = NoteSymbol.asDuration(over);
+                    over = nil;
+                } 
             };
 
-            // if we know the chord name return it
-            chord = if(shapes.includesKey(name.asSymbol)) {
-                shapes[name.asSymbol];
-            } {
-                var shape, root, noteNameLength = 1;
+            over = NoteSymbol.asNote(over);
 
-                // parse chord name out of string
-                shape = shapes[name.drop(1).asSymbol] 
-                    ?? { noteNameLength = 2; shapes[name.drop(2).asSymbol] }
-                    ?? { noteNameLength = 3; shapes[name.drop(3).asSymbol] }
-                    ?? { shapes.major };
+            // parse chord name out of string shortening it a character at a 
+            // time if no match found
+            shape = shapes[name.asSymbol];
+            while({ shape.isNil and: { noteNameLength < 3 } }, {
+                noteNameLength = noteNameLength + 1;
+                shape = shapes[name.drop(noteNameLength).asSymbol];
+            });
 
-                // use the remainder of the string as the root note
-                root = NoteSymbol(name.keep(noteNameLength));
+            // if no name found assume major
+            shape = shape ?? { shapes.major };
 
-                // if an inversion was specified
-                if(over.notNil) {
-                    var octaveShift = 0;
+            // use the remainder of the string as the root note
+            if(noteNameLength > 0) {
+                root = NoteSymbol.asNote(name.keep(noteNameLength));
+            };
 
-                    // shift notes up an octave if root is higher than new base
-                    if(over < root) { octaveShift = 12 };
+            // if an inversion was specified
+            if(over.notNil) {
+                var octaveShift = 0;
 
-                    // iterate over the notes 
-                    shape = shape.collect { |note| 
-                        // and if the notes are below our new lowest note
-                        // move it up an octave
-                        if(note < (over - root + octaveShift)) {
-                            note + 12
-                        } {
-                            note
-                        }
-                    };
+                // shift notes up an octave temporarily if root is > over
+                if(over < root) { octaveShift = 12 };
 
-                    // shift notes back if shift perfomed whilst inverting
-                    shape = shape - octaveShift;
+                // iterate over the notes 
+                shape = shape.collect { |note| 
+                    // and if the notes are below our new lowest note
+                    // move it up an octave
+                    if(note < (over - root + octaveShift)) {
+                        note + 12
+                    } {
+                        note
+                    }
                 };
 
-                root + shape;
+                // shift notes back if shift perfomed whilst inverting
+                shape = shape - octaveShift;
             };
 
-            chord.sort; 
+            chord = (root + shape).sort; 
+
+            // if duration was specified return it with the chord
+            dur !? { ^[chord, dur] };
+
+            // otherwise return the chord
+            ^chord;
         } {
             // return what was passed in if not a chord name
             name
@@ -169,22 +178,50 @@ NoteSymbol {
         };
     }
 
-    *new { |name|
-        ^if(name.isKindOf(Symbol) or: { name.isKindOf(String) } 
-            and: { name != \ } and: { name != \rest }
+    *asNote { |name|
+        if(name.isKindOf(Symbol) or: { name.isKindOf(String) } 
+            and: { name != \ } and: { name != \rest } and: { name != "" }
         ) {
-            var octaveShift = 0;
+            var octave = 0, note, dur;
             name = name.asString.toLower;
 
+            // if duration specified lop it off
+            #name, dur = name.split($\_);
+
+            // convert duration if specified
+            dur = dur !? { NoteSymbol.asDuration(dur) }; 
+
             // if octave specified chop it off and shift note
-            if(name.last.isDecDigit) {
-                octaveShift = name.last.digit * 12 + 12; 
+            if(name.notNil and: { name.last.isDecDigit }) {
+                octave = name.last.digit * 12 + 12; 
                 name = name.drop(-1);
             };
 
-            notes[name.asSymbol] + octaveShift;
+            // add the octave to the note number
+            note = notes[name.asSymbol] + octave;
+            
+            // if duration was specified return that with note as tuple
+            dur !? { ^[note, dur] };
+
+            // otherwise return the note
+            ^note;
         } {
-            name;
+            // if it wasn't something that could be parsed return that
+            ^name;
+        };
+    }
+    
+    *asDegree { |name scale stepsPerOctave=12| 
+        ^NoteSymbol.asNote(name, scale, stepsPerOctave);
+    }
+
+    *asDuration { |string|
+        string = string.asString;
+        if(string.size > 1) {
+            // first digit is numerator second is denumerator
+            ^string[0].digit / string[1].digit; 
+        } {
+            ^string[0].digit;
         };
     }
 
@@ -192,9 +229,17 @@ NoteSymbol {
 }
 
 + Symbol {
+    // treat symbol as representing a chord
     asNotes { ^ChordSymbol.asNotes(this) }
-    asDegrees { |scale| ^ChordSymbol.asDegrees(this, scale) }
-    asNote { ^NoteSymbol(this) }
+    asDegrees { |scale notesPerOctave| 
+        ^ChordSymbol.asDegrees(this, scale, notesPerOctave) 
+    }
+
+    // treat symbol as representing a note
+    asNote { ^NoteSymbol.asNote(this) }
+    asDegree { |scale notesPerOctave=12|
+        ^NoteSymbol.asDegree(this, scale, notesPerOctave) 
+    }
 }
 
 + SequenceableCollection {
@@ -203,18 +248,24 @@ NoteSymbol {
         ^ChordSymbol.noteProgression(this);
     }
 
-    chordProgDegrees { |scale|
-        ^ChordSymbol.degreeProgression(this, scale);
+    chordProgDegrees { |scale notesPerOctave=12|
+        ^ChordSymbol.degreeProgression(this, scale, notesPerOctave);
     }
 
     noteProg {  
         ^this.collect { |name| name.asNote };
     }
 
+    noteProgDegree { |scale notesPerOctave=12|
+        ^this.collect { |name| name.asDegree(scale, notesPerOctave) }
+    }
+
     // converts a given key/note to a degree
     // TODO won't be required in next SC release see pull request #1164
     performKeyToDegree2 { |key stepsPerOctave=12|
         var nearestDegree, closestScale, sharpening, octave;
+
+        stepsPerOctave = stepsPerOctave ?? 12;    
 
         // store away octave and wrap key inside a single one
         octave = (key / stepsPerOctave).floor;
@@ -237,14 +288,15 @@ NoteSymbol {
 
 + SimpleNumber {
     // TODO won't be required in next SC release see pull request #1164
-    keyToDegree2 { arg scale, stepsPerOctave=12; // collection is presumed to be sorted
-       ^scale.performKeyToDegree2(this, stepsPerOctave) 
+    keyToDegree2 { |scale stepsPerOctave=12| // collection is presumed to be sorted
+        scale = scale ?? { Scale.major.degrees };
+        ^scale.performKeyToDegree2(this, stepsPerOctave) 
     }
 }
 
 + Scale {
     // TODO won't be required in next SC release see pull request #1164
-    performKeyToDegree2 { |degree stepsPerOctave=12| 
-        ^degrees.performKeyToDegree2(degree, stepsPerOctave)
+    performKeyToDegree2 { |key stepsPerOctave=12| 
+        ^degrees.performKeyToDegree2(key, stepsPerOctave)
     }
 }
