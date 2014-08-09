@@ -1,0 +1,134 @@
+TITLE:: NoteSymbol
+summary:: Helper class for expressing notes by name.
+categories:: Math, Tuning 
+related:: Classes/ChordSymbol, Classes/Scale, Classes/SpecialEvent
+
+DESCRIPTION::
+Helper class for expressing notes by name. Particualrily useful for inputing 
+music conveyed with traditional staff notation or expressed by muscians not
+used to calling notes by a number.
+
+It transalates notes to their numerical representation in iterms of either 
+notes, midinotes or degrees as desribed by the pattern library.
+
+Typically this class won't be used directly since convienance methods have 
+been implimented for both link::Classes/Symbol:: and 
+link::Classes/SequenceableCollection::.
+
+Quickly write a note progression as:
+code::
+[\C, \Cs, \e, \eb, \g, \gs].noteProg; // -> [ 0, 1, 4, 3, 7, 8 ]
+::
+Sharps and flats are denoted by following the note name with either s or b
+respectively.
+
+NoteSymbol supports notes specified with durations, simply pop the 
+duration after an underscore - when only one number is specified NoteSymbol 
+assumes you're talking about whole notes:
+code::
+[\C_1, \c_2, \d_3].noteProg; // -> [ [ 0, 1 ], [ 0, 2 ], [ 2, 3 ] ]
+::
+When a second digit is specified it's used to divide the duration:
+code::
+[\C_12, \C_34, \C_16].noteProg; // 1/2 note, 3/4 note, 1/6 note
+::
+Octaves can also be specified, with or without note lengths:
+code::
+[\C5_32, \C4_32, \C3_22].noteProg; // -> [ [ 72, 1.5 ], [ 60, 1.5 ], [ 48, 1 ] ]
+[\C5, \C4, \C3].noteProg;          // -> [ 72, 60, 48 ]
+::
+
+CLASSMETHODS::
+
+METHOD:: asNote
+
+ARGUMENT:: name
+The symbolic representation of a note.
+
+returns:: The note as a number:
+code::
+NoteSymbol.asNote(\C4); // -> 60
+\C4.asNote;             // This is equivalent
+::
+If the note name contains a duration a tuple is returned containing both the
+note and the duration.
+code::
+\C3_32.asNote; // -> [48, 1.5]
+::
+
+METHOD:: asDegree
+Returns the note as a degree of scale. Assumes scale is always in key of C.
+
+ARGUMENT:: name
+The symbolic representation of a note.
+
+ARGUMENT:: scale
+The link::Classes/Scale:: that this note should be returned as a degree of.
+If none is specified Scale.major is assumed.
+
+ARGUMENT:: stepsPerOctave
+The number of steps per octave.
+
+returns:: Returns the note as a degree of scale:
+code::
+NoteSymbol.asDegree(\G4, Scale.dorian); // -> 60
+\G4.asDegree(Scale.dorian);             // This is equivalent
+::
+
+If the note name contains a duration a tuple is returned containing both the
+degree and the duration.
+code::
+\C3_32.asNote; // -> [48, 1.5]
+::
+
+METHOD:: noteName
+
+ARGUMENT:: n
+The number of a note
+
+returns:: The symbolic representation of that note.
+
+METHOD:: asDuration
+
+ARGUMENT:: string
+A string or symbol encoding a note duration.
+
+returns:: That duration in beats
+code::
+NoteSymbol.asDuration(32); // -> 1.5
+::
+
+METHOD:: notes
+You can add and remove notes form NoteSymbol's vocabulary with .put. 
+All note names must be 1 or 2 characters long and lowercase. Sharps 
+and flats are not automatically defined for you.
+
+returns:: 
+a dictionary containing note names mapped to note values. 
+code::
+NoteSymbol.notes.put(\zz, 3.21);
+\zz.asNote; -> 3.21
+[\cs4, \zz4, \db3, \zz3].noteProg; // -> [ 61, 63.21, 49, 51.21 ]
+::
+
+INSTANCEMETHODS::
+
+EXAMPLES::
+code:: 
+// use notes with durations in a Pbind
+a = Pbind([\note, \dur], Pseq([\C_32, \D_32, \Ds_1].noteProg, inf)).play;
+a.stop;
+
+// octave, ctranspose etc still function as normal
+(
+a = Pbind(
+    [\note, \dur], Pseq([\C_32, \D_32, \Ds_1].noteProg, inf), 
+    \octave,       Pseq([4, 5, 6, 7], inf),
+    \legato,       Pseq([8, 1, 1, 1], inf),
+    \ctranspose,   Pseq([Pn(0, 7), 3], inf)
+).play
+
+a.stop;
+::
+
+
