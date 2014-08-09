@@ -7,12 +7,17 @@ DESCRIPTION::
 ChordSymbol can take a chord name and tell you which notes or scale degrees are in it.
 
 You're unlikely to need to use this class directly since convienance methods
-have been implimented for link::Classes/Symbol:: and link::Classes/SequencableCollection::.  
+have been implimented for link::Classes/Symbol:: and link::Classes/SequenceableCollection::.  
 
 Quickly write progressions with .chordProg:
 code::
 [\C, \G_b, \F_a, \G_b].chordProg // -> [ [ 0, 4, 7 ], [ 11, 14, 19 ], [ 9, 12, 17 ], [ 11, 14, 19 ] ]
 ::
+
+Express the timing of the chords along with there names:
+code::
+[\C_2, \F_2, \G_2, \Am_2, \D_2, \G_2, \A_2, \Bm_2].chordProg; // -> ugly list of numbers
+
 
 Supports multiple naming conventions for common chords:
 code::
