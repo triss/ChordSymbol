@@ -247,9 +247,9 @@ NoteSymbol {
         ^NoteSymbol.asDegree(this, scale, notesPerOctave) 
     }
     
-   // embedInStream {
-   //     (NoteSymbol.asNote(this) ?? this).yield;
-   // }
+    embedInStream {
+        (NoteSymbol.asNote(this) ?? this).yield;
+    }
 
     next { 
         ^(NoteSymbol.asNote(this) ?? { ChordSymbol.asNotes(this) } ?? this) 
