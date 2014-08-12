@@ -210,11 +210,11 @@ NoteSymbol {
             dur !? { ^[note, dur] };
 
             // otherwise return the note
-            ^note;
-        } {
-            // if it wasn't something that could be parsed return that
-            ^name;
-        };
+            note !? { ^note };
+        } 
+
+        // if it wasn't something that could be parsed return that
+        ^name;
     }
     
     *asDegree { |name scale stepsPerOctave=12| 
