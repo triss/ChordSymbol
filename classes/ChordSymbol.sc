@@ -165,9 +165,7 @@ ChordSymbol {
         }
     }
 
-    *new { |c|
-        ^this.toNotes(c);
-    }
+    *new { |c| ^this.asNotes(c) }
 }
 
 NoteSymbol {
@@ -232,6 +230,8 @@ NoteSymbol {
     }
 
     *noteName { |n| ^notes.findKeyForValue(n % 12) }
+
+    *new { |c| ^this.asNotes(c) }
 }
 
 + Symbol {
@@ -247,14 +247,12 @@ NoteSymbol {
         ^NoteSymbol.asDegree(this, scale, notesPerOctave) 
     }
     
+    // override what happens when Symbol is embedded in a stream
     embedInStream {
-        ^(NoteSymbol.asNote(this) ?? this).postln.yield;
+        ^(NoteSymbol.asNote(this) ?? this).yield;
     }
 
-//    next { 
-//        ^(NoteSymbol.asNote(this) ?? { ChordSymbol.asNotes(this) } ?? this) 
-//    }
-
+    // work out wether or not this is a rest or not
     isRest { ^(NoteSymbol.asNote(this) == this) }
 }
 
