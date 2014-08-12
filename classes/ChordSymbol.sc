@@ -204,7 +204,7 @@ NoteSymbol {
             };
 
             // add the octave to the note number
-            note = notes[name.asSymbol] + octave;
+            notes[name.asSymbol] !? { note = notes[name.asSymbol] + octave };
             
             // if duration was specified return that with note as tuple
             dur !? { ^[note, dur] };
