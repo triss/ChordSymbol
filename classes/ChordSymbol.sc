@@ -3,6 +3,12 @@ ChordSymbol {
     // a list of traditional chord shapes
     classvar <shapes;
 
+    *autoChord {
+        this.preProcessor = { |code|
+            "\\[:alnum:]*".findAllRegexp(code).postln;
+        };
+    }
+
     *initClass {
         shapes = (
             major:          [0, 4, 7],
@@ -240,6 +246,16 @@ NoteSymbol {
     asDegree { |scale notesPerOctave=12|
         ^NoteSymbol.asDegree(this, scale, notesPerOctave) 
     }
+    
+   // embedInStream {
+   //     (NoteSymbol.asNote(this) ?? this).yield;
+   // }
+
+    next { 
+        ^(NoteSymbol.asNote(this) ?? { ChordSymbol.asNotes(this) } ?? this) 
+    }
+
+    isRest { ^(NoteSymbol.asNote(this) ?? { ChordSymbol.asNotes(this) }).notNil }
 }
 
 + SequenceableCollection {
