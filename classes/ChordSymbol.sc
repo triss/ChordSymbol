@@ -248,7 +248,7 @@ NoteSymbol {
     }
     
     embedInStream {
-        (NoteSymbol.asNote(this) ?? this).yield;
+        ^(NoteSymbol.asNote(this) ?? this).yield;
     }
 
 //    next { 
