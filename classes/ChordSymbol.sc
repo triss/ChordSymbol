@@ -53,7 +53,7 @@ ChordSymbol {
             maj11:          [0, 4, 7, 11, 14, 17],
             '11sharp':      [0, 4, 7, 10, 14, 18],
             m11sharp:       [0, 3, 7, 10, 14, 18],
-            '13':           [0, 4, 7, 10, 14, 17, 21],
+            '13':           [0, 4, 7, 10, 14, 17,match 21],
             m13:            [0, 3, 7, 10, 14, 17, 21]
         );
 
@@ -255,7 +255,7 @@ NoteSymbol {
 //        ^(NoteSymbol.asNote(this) ?? { ChordSymbol.asNotes(this) } ?? this) 
 //    }
 
-    isRest { ^(NoteSymbol.asNote(this) ?? { ChordSymbol.asNotes(this) }).isNil }
+    isRest { ^(NoteSymbol.asNote(this) == this) }
 }
 
 + SequenceableCollection {
