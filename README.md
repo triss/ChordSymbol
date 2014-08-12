@@ -1,12 +1,16 @@
-ChordSymbol
-===========
+ChordSymbol and NoteSymbol
+==========================
 
-Simple notation for chords in SuperCollider
+Simple notation for chords and notes in SuperCollider
 
-Quickly write progressions with .chordProg: 
+Quickly write progressions with `.chordProg`: 
 ```
 [\Cm_eb, \Fm, \Gm, \Cm_g, \Cm_eb, \Fm, \Gm_d, \Cm].chordProg;
 [\C, \G_b, \F_a, \G_b].chordProg;
+```
+Or progressions of notes with `.noteProg`:
+```
+ [\E4, \Fs4, \B4, \Cs5, \D5, \Fs4, \E4, \Cs5, \B4, \Fs4, \D5, \Cs5].noteProg
 ```
 Supports multiple naming conventions for common chords:
 ```  
