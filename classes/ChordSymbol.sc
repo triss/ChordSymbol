@@ -251,9 +251,9 @@ NoteSymbol {
         (NoteSymbol.asNote(this) ?? this).yield;
     }
 
-    next { 
-        ^(NoteSymbol.asNote(this) ?? { ChordSymbol.asNotes(this) } ?? this) 
-    }
+//    next { 
+//        ^(NoteSymbol.asNote(this) ?? { ChordSymbol.asNotes(this) } ?? this) 
+//    }
 
     isRest { ^(NoteSymbol.asNote(this) ?? { ChordSymbol.asNotes(this) }).notNil }
 }
