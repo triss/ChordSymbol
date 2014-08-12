@@ -255,7 +255,7 @@ NoteSymbol {
 //        ^(NoteSymbol.asNote(this) ?? { ChordSymbol.asNotes(this) } ?? this) 
 //    }
 
-    isRest { ^(NoteSymbol.asNote(this) != this) }
+    isRest { ^(NoteSymbol.asNote(this) == this) }
 }
 
 + SequenceableCollection {
