@@ -191,6 +191,7 @@ NoteSymbol {
 
         // reguritate anything we definately can't process
         if(name.isRest or: name.isKindOf(String).not or: name.isKindOf(Symbol).not) { 
+            "reguritating".postln;
             ^name 
         };
        
@@ -267,7 +268,7 @@ NoteSymbol {
         "is rest!".postln;
         ^this.isMap.not
         and: { ^NoteSymbol.restNames.findMatch(this).notNil } 
-        and: { ^NoteSymbol.asNote(this).asArray[0] == \ }
+        and: { ^NoteSymbol.asNote(this).asArray[0] }
         and: { ^ChordSymbol.asNotes(this)[0] == \ }
     }
 }
