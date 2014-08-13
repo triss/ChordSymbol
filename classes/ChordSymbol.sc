@@ -190,7 +190,7 @@ NoteSymbol {
         var octave = 0, note, dur;
 
         // reguritate anything we definately can't process
-        if(name.isRest or: name.isKindOf(String).not or: name.isKindOf(Symbol).not) { 
+        if(name.isRest or: (name.isKindOf(String) or: name.isKindOf(Symbol)).not { 
             "reguritating".postln;
             ^name 
         };
