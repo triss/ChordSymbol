@@ -194,7 +194,7 @@ NoteSymbol {
             ^input 
         };
        
-        // make name a lowercase string
+        // make input a lowercase string
         name = input.asString.toLower;
 
         // if duration specified lop it off
@@ -216,11 +216,13 @@ NoteSymbol {
 
         // add the octave to the note number
         notes[name.asSymbol] !? { note = notes[name.asSymbol] + octave };
-        
+       
+        [dur, note].postln;
+
         // if duration was specified return that with note as tuple
         dur !? { ^[note, dur] };
 
-        // c$if the note number was found return that
+        // if the note number was found return that
         note !? { ^note };
 
         // otherwise just throw out what came in
