@@ -94,7 +94,7 @@ ChordSymbol {
 
     // outputs notes in a named chord as notes
     *asNotes { |input|
-        var over, chord, shape, root = 0, noteNameLength = 0, dur;
+        var over, chord, shape, root = 0, noteNameLength = 0, dur, name;
        
         // reguritate anything we definately can't process
         if(name.isRest and: (name.isKindOf(String) or: name.isKindOf(Symbol)).not) { 
