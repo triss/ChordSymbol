@@ -191,7 +191,6 @@ NoteSymbol {
 
         // reguritate anything we definately can't process
         if(name.isRest or: (name.isKindOf(String) or: name.isKindOf(Symbol)).not) { 
-            "reguritating".postln;
             ^name 
         };
        
@@ -221,8 +220,11 @@ NoteSymbol {
         // if duration was specified return that with note as tuple
         dur !? { ^[note, dur] };
 
-        // otherwise return the note
+        // c$if the note number was found return that
         note !? { ^note };
+
+        // otherwise just throw out the name
+        ^name;
     }
     
     *asDegree { |name scale stepsPerOctave=12| 
