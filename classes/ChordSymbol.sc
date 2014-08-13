@@ -223,7 +223,7 @@ NoteSymbol {
         notes[name.asSymbol] !? { note = notes[name.asSymbol] + octave };
        
         // if duration was specified return that with note as tuple
-        dur !? { note !? { ^[note, dur] } };
+        dur !? { note !? { ^[note, dur.asInteger] } };
 
         // if the note number was found return that
         note !? { ^note };
