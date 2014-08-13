@@ -125,16 +125,15 @@ ChordSymbol {
             shape = shapes[name.drop(noteNameLength).asSymbol];
         });
 
-        // if no name found assume major
-        shape = shape ?? { shapes.major };
-
         // use the remainder of the string as the root note
         if(noteNameLength > 0) {
             root = NoteSymbol.asNote(name.keep(noteNameLength));
+            // if no name found assume major
+            shape = shape ?? { shapes.major };
         };
 
         // if an inversion was specified
-        if(over.notNil) {
+        if(over.notNili and: shape.notNil) {
             var octaveShift = 0;
 
             // shift notes up an octave temporarily if root is > over
