@@ -262,7 +262,11 @@ NoteSymbol {
     
     // override what happens when Symbol is embedded in a stream
     embedInStream {
-        ^(NoteSymbol.asNote(this) ?? { "debug".postln; ChordSymbol.asNotes(this) } ?? { this }).yield;
+        ^(
+            NoteSymbol.asNote(this) != this 
+            and: { ChordSymbol.asNotes(this) != this } 
+            or: { this }
+        ).yield;
     }
 
     // work out wether or not this is a rest or not
