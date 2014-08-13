@@ -186,16 +186,16 @@ NoteSymbol {
         restNames = IdentitySet[\, \rest, \r, ""];
     }
 
-    *asNote { |name|
-        var octave = 0, note, dur;
+    *asNote { |input|
+        var octave = 0, note, dur, name;
 
         // reguritate anything we definately can't process
         if(name.isRest or: (name.isKindOf(String) or: name.isKindOf(Symbol)).not) { 
-            ^name 
+            ^input 
         };
        
         // make name a lowercase string
-        name = name.asString.toLower;
+        name = input.asString.toLower;
 
         // if duration specified lop it off
         #name, dur = name.split($\_);
@@ -223,8 +223,8 @@ NoteSymbol {
         // c$if the note number was found return that
         note !? { ^note };
 
-        // otherwise just throw out the name
-        ^name;
+        // otherwise just throw out what came in
+        ^input;
     }
     
     *asDegree { |name scale stepsPerOctave=12| 
