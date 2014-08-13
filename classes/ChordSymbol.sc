@@ -294,7 +294,7 @@ NoteSymbol {
 + SequenceableCollection {
     // try converting to, note then chord
     progression {
-        ^this.collect { |c| NoteSymbol.asNoteOrChord(c) }
+        ^this.collect { |s| s.asNoteOrChord }
     }
 
     // convienience for converting chord names to notes
