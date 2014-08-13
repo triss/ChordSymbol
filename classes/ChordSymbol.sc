@@ -128,12 +128,13 @@ ChordSymbol {
         // use the remainder of the string as the root note
         if(noteNameLength > 0) {
             root = NoteSymbol.asNote(name.keep(noteNameLength));
-            // if no name found assume major
+
+            // if note name found assume major chord
             shape = shape ?? { shapes.major };
         };
 
         // if an inversion was specified
-        if(over.notNili and: shape.notNil) {
+        if(over.notNil and: shape.notNil) {
             var octaveShift = 0;
 
             // shift notes up an octave temporarily if root is > over
