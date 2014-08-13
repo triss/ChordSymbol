@@ -202,7 +202,7 @@ NoteSymbol {
         #name, dur = name.split($\_);
 
         // if name is a number we have a rest
-        if(name.asNumber != 0) {
+        if(name.asInteger != 0) {
             ^[\, NoteSymbol.asDuration(name)];
         };
 
