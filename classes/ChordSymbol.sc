@@ -136,8 +136,6 @@ ChordSymbol {
             shape = shape ?? { shapes.major };
         };
 
-        [root, over, shape, dur].postln;
-
         // if an inversion was specified
         if(over.notNil and: shape.notNil) {
             var octaveShift = 0;
@@ -294,6 +292,11 @@ NoteSymbol {
 }
 
 + SequenceableCollection {
+    // try converting to, note then chord
+    progression {
+        ^this.collect { |c| NoteSymbol.asNoteOrChord(c) }
+    }
+
     // convienience for converting chord names to notes
     chordProg {
         ^ChordSymbol.noteProgression(this);
