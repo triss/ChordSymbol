@@ -127,7 +127,10 @@ ChordSymbol {
 
         // use the remainder of the string as the root note
         if(noteNameLength > 0) {
-            root = NoteSymbol.asNote(name.keep(noteNameLength));
+            var potentialRoot = name.keep(noteNameLength);
+            root = NoteSymbol.asNote(potentialRoot);
+
+            if(root == potentialRoot) { ^input };
 
             // if note name found assume major chord
             shape = shape ?? { shapes.major };
