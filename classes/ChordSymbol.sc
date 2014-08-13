@@ -260,14 +260,23 @@ NoteSymbol {
         ^NoteSymbol.asDegree(this, scale, notesPerOctave) 
     }
     
-    // override what happens when Symbol is embedded in a stream
-    embedInStream {
-        ^(
-            NoteSymbol.asNote(this) != this 
-            and: { ChordSymbol.asNotes(this) != this } 
-            or: { this }
-        ).yield;
+    asNoteOrChord {
+        var ns, cs;
+
+        // return note number if it makes a note
+        ns = NoteSymbol.asNote(this);
+        if(ns != this) { ^ns };
+
+        // return chord if it returns a chord
+        cs = ChordSymbol.asNotes(this);
+        if(cs != this) { ^cs };
+
+        // otherwise just return this
+        ^this;
     }
+
+    // override what happens when Symbol is embedded in a stream
+    embedInStream { ^this.asNoteOrChord.yield }
 
     // work out wether or not this is a rest or not
     isRest { 
