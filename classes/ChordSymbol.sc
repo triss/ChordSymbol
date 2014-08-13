@@ -93,76 +93,75 @@ ChordSymbol {
     }
 
     // outputs notes in a named chord as notes
-    *asNotes { |name|
-        ^if(name.isKindOf(Symbol) or: { name.isKindOf(String) } 
-            and: { name != \ } and: { name != \rest }
-        ){
-            var over, chord, shape, root = 0, noteNameLength = 0, dur;
+    *asNotes { |input|
+        var over, chord, shape, root = 0, noteNameLength = 0, dur;
+       
+        // reguritate anything we definately can't process
+        if(name.isRest and: (name.isKindOf(String) or: name.isKindOf(Symbol)).not) { 
+            ^input 
+        };
 
-            name = name.asString;
+        // convert input to string
+        name = input.asString;
 
-            // lop off the inversion if specified
-            #name, over, dur = name.split($\_);
+        // lop off the inversion if specified
+        #name, over, dur = name.split($\_);
 
-            // work out if duration or over was specified after the first _
-            if(dur.isNil) {
-                if(over.notNil and: { over[0].isDecDigit }) {
-                    dur = NoteSymbol.asDuration(over);
-                    over = nil;
-                } 
+        // work out if duration or over was specified after the first _
+        if(dur.isNil) {
+            if(over.notNil and: { over[0].isDecDigit }) {
+                dur = NoteSymbol.asDuration(over);
+                over = nil;
+            } 
+        };
+
+        over = NoteSymbol.asNote(over);
+
+        // parse chord name out of string shortening it a character at a 
+        // time if no match found
+        shape = shapes[name.asSymbol];
+        while({ shape.isNil and: { noteNameLength < 3 } }, {
+            noteNameLength = noteNameLength + 1;
+            shape = shapes[name.drop(noteNameLength).asSymbol];
+        });
+
+        // if no name found assume major
+        shape = shape ?? { shapes.major };
+
+        // use the remainder of the string as the root note
+        if(noteNameLength > 0) {
+            root = NoteSymbol.asNote(name.keep(noteNameLength));
+        };
+
+        // if an inversion was specified
+        if(over.notNil) {
+            var octaveShift = 0;
+
+            // shift notes up an octave temporarily if root is > over
+            if(over < root) { octaveShift = 12 };
+
+            // iterate over the notes 
+            shape = shape.collect { |note| 
+                // and if the notes are below our new lowest note
+                // move it up an octave
+                if(note < (over - root + octaveShift)) {
+                    note + 12
+                } {
+                    note
+                }
             };
 
-            over = NoteSymbol.asNote(over);
+            // shift notes back if shift perfomed whilst inverting
+            shape = shape - octaveShift;
+        };
 
-            // parse chord name out of string shortening it a character at a 
-            // time if no match found
-            shape = shapes[name.asSymbol];
-            while({ shape.isNil and: { noteNameLength < 3 } }, {
-                noteNameLength = noteNameLength + 1;
-                shape = shapes[name.drop(noteNameLength).asSymbol];
-            });
+        chord = (root + shape).sort; 
 
-            // if no name found assume major
-            shape = shape ?? { shapes.major };
+        // if duration was specified return it with the chord
+        dur !? { ^[chord, dur] };
 
-            // use the remainder of the string as the root note
-            if(noteNameLength > 0) {
-                root = NoteSymbol.asNote(name.keep(noteNameLength));
-            };
-
-            // if an inversion was specified
-            if(over.notNil) {
-                var octaveShift = 0;
-
-                // shift notes up an octave temporarily if root is > over
-                if(over < root) { octaveShift = 12 };
-
-                // iterate over the notes 
-                shape = shape.collect { |note| 
-                    // and if the notes are below our new lowest note
-                    // move it up an octave
-                    if(note < (over - root + octaveShift)) {
-                        note + 12
-                    } {
-                        note
-                    }
-                };
-
-                // shift notes back if shift perfomed whilst inverting
-                shape = shape - octaveShift;
-            };
-
-            chord = (root + shape).sort; 
-
-            // if duration was specified return it with the chord
-            dur !? { ^[chord, dur] };
-
-            // otherwise return the chord
-            ^chord;
-        } {
-            // return what was passed in if not a chord name
-            name
-        }
+        // otherwise return the chord
+        ^chord;
     }
 
     *new { |c| ^this.asNotes(c) }
@@ -268,7 +267,6 @@ NoteSymbol {
 
     // work out wether or not this is a rest or not
     isRest { 
-        "is rest!".postln;
         ^this.isMap.not
         and: { ^NoteSymbol.restNames.findMatch(this).notNil } 
         and: { ^NoteSymbol.asNote(this).asArray[0] }
