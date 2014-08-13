@@ -117,10 +117,8 @@ ChordSymbol {
 
         over = NoteSymbol.asNote(over);
 
-        [name, over, dur].postln;
-
         // parse chord name out of string shortening it a character at a 
-        // time if no match found
+        // time ifrom the front if no match found
         shape = shapes[name.asSymbol];
         while({ shape.isNil and: { noteNameLength < 3 } }, {
             noteNameLength = noteNameLength + 1;
@@ -158,6 +156,9 @@ ChordSymbol {
         };
 
         chord = (root + shape).sort; 
+
+        // if we parsed out a string return the input
+        if(chord.isString) { ^input };
 
         // if duration was specified return it with the chord
         dur !? { ^[chord, dur] };
