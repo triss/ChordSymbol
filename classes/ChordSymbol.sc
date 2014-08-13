@@ -258,16 +258,18 @@ NoteSymbol {
     
     // override what happens when Symbol is embedded in a stream
     embedInStream {
+        "embedding".postln;
         ^(NoteSymbol.asNote(this) ?? this).yield;
     }
 
     // work out wether or not this is a rest or not
     isRest { 
+        "is rest!".postln;
         ^this.isMap.not
-        and: { NoteSymbol.asNote(this) == this }
-        and: { ChordSymbol.asNotes(this) == this };
+        and: { ^NoteSymbol.restNames.findMatch(this).notNil } 
+        and: { ^NoteSymbol.asNote(this).asArray[0] == \ }
+        and: { ^ChordSymbol.asNotes(this)[0] == \ }
     }
-
 }
 
 + SequenceableCollection {
