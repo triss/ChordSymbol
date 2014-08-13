@@ -117,6 +117,8 @@ ChordSymbol {
 
         over = NoteSymbol.asNote(over);
 
+        [name, over, dur].postln;
+
         // parse chord name out of string shortening it a character at a 
         // time if no match found
         shape = shapes[name.asSymbol];
