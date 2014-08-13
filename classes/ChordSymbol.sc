@@ -164,7 +164,7 @@ ChordSymbol {
         if(chord.isString) { ^input };
 
         // if duration was specified return it with the chord
-        dur !? { ^[chord, dur] };
+        dur !? { ^[chord, dur.asInteger] };
 
         // otherwise return the chord
         ^chord;
