@@ -79,16 +79,15 @@ ChordSymbol {
     }
 
     // outputs notes in a named chord to degrees of scale in an array
-    *asDegrees { |name scale stepsPerOctave=12|
-        ^if(name.isKindOf(Symbol) or: { name.isKindOf(String) } 
-            and: { name != \ } and: { name != \rest }
-        ) {
-            ChordSymbol.asNotes(name).asArray.collect { |n| 
-                // TODO when next version of SC comes out use keyToDegree
-                n.keyToDegree2(scale, stepsPerOctave);
-            }
-        } {
-            name;
+    *asDegrees { |input scale stepsPerOctave=12|
+        // reguritate anything we definately can't process
+        if(input.isRest or: (input.isKindOf(String) or: input.isKindOf(Symbol)).not) { 
+            ^input 
+        };
+
+        ^ChordSymbol.asNotes(input).asArray.collect { |n| 
+            // TODO when next version of SC comes out use keyToDegree
+            n.keyToDegree2(scale, stepsPerOctave);
         }
     }
 
@@ -97,7 +96,7 @@ ChordSymbol {
         var over, chord, shape, root = 0, noteNameLength = 0, dur, name;
        
         // reguritate anything we definately can't process
-        if(name.isRest and: (name.isKindOf(String) or: name.isKindOf(Symbol)).not) { 
+        if(input.isRest or: (input.isKindOf(String) or: input.isKindOf(Symbol)).not) { 
             ^input 
         };
 
@@ -195,7 +194,7 @@ NoteSymbol {
         var octave = 0, note, dur, name;
 
         // reguritate anything we definately can't process
-        if(name.isRest and: (name.isKindOf(String) or: name.isKindOf(Symbol)).not) { 
+        if(input.isRest or: (input.isKindOf(String) or: input.isKindOf(Symbol)).not) { 
             ^input 
         };
        
