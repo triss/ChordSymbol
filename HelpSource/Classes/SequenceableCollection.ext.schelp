@@ -1,0 +1,42 @@
+INSTANCEMETHODS::
+
+subsection:: Extensions by ChordSymbol and NoteSymbol
+
+method:: progression
+
+returns:: trys to convert link::Classes/Symbols:: using link::Classes/NoteSymbol::, then a link::Classes/ChordSymbol:: and returns those if possible. If values can not be converted they stay as they are.
+
+method:: chordProg
+
+returns:: processes the symbols in this collection as a link::Classes/ChordSymbol:: and returns the notes that would be in the chords specified. If no conversion can be made that value stays the same.
+
+method:: chordProgDegrees
+argument:: scale
+The scale to perform the conversion with.
+
+argument:: stepsPerOctave
+The number of steps per octave for that scale.
+
+returns:: processes the symbols in this collection as a link::Classes/ChordSymbol::s and returns the degrees that would be in the chord specified in the scale specified. If no conversion can be made the value that can not be converted is embeded.
+
+method:: noteProg
+
+returns:: processes the symbols in this collection as a link::Classes/NoteSymbol::s and returns the note that those symbols specified. If no conversion can be made the values itself is embeded.
+
+method:: noteProgDegree
+argument:: scale
+The scale to perform the conversion with.
+
+argument:: stepsPerOctave
+The number of steps per octave for that scale.
+
+returns:: processes the symbols in this collection as a link::Classes/NoteSymbol::s and replaces them with the degree the note would be of the scale specified. If no conversion can be made the value that can not be converted is embeded.
+
+method:: performKeyToDegree2
+Unlike performKeyToDegree actually performs the inverse of performDegreeToKey.
+
+argument:: key
+Note to convert to a scale degree.
+
+argument:: stepsPerOctave
+The number of steps per octave to use in this calculation.

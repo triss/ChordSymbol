@@ -1,0 +1,32 @@
+INSTANCEMETHODS::
+
+subsection:: Extensions by ChordSymbol and NoteSymbol
+
+method:: asNotes
+
+returns:: processes the symbol as a link::Classes/ChordSymbol:: and returns the notes that would be in the chord specified. If no conversion can be made the symbol itself is returned.
+
+method:: asDegrees
+argument:: scale
+The scale to perform the conversion with.
+
+argument:: stepsPerOctave
+The number of steps per octave for that scale.
+
+returns:: processes the symbol as a link::Classes/ChordSymbol:: and returns the degrees that would be in the chord specified in the scale specified. If no conversion can be made the symbol itself is returned.
+
+method:: asNote
+
+returns:: processes the symbol as a link::Classes/NoteSymbol:: and returns the note that symbol specified. If no conversion can be made the symbol itself is returned.
+
+method:: asDegree
+argument:: scale
+The scale to perform the conversion with.
+
+argument:: stepsPerOctave
+The number of steps per octave for that scale.
+
+returns:: processes the symbol as a link::Classes/NoteSymbol:: and returns the degree that would be in the scale specified. If no conversion can be made the symbol itself is returned.
+
+method:: asNoteOrChord
+returns:: trys to convert this symbol as a link::Classes/NoteSymbol::, then a link::Classes/ChordSymbol:: and returns that if possible. Otherwise the symbol itself is returned.

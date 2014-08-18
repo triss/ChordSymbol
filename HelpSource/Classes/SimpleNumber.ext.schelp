@@ -1,0 +1,11 @@
+INSTANCEMETHODS::
+
+subsection:: Extensions by ChordSymbol and NoteSymbol
+
+method:: keyToDegree2 
+
+argument:: scale
+The scale to convert key to degree in
+
+argument:: stepsPerOctave
+The number of steps per octave for this conversion.
